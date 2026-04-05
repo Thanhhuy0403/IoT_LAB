@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <title>ESP32 Configuration</title>
+        <link rel="stylesheet" href="/style.css" />
+    </head>
+    <body>
+        <div class="container">
+            <h1>ESP32 Configuration</h1>
+            <div class="tabs">
+                <button class="tab active" onclick="showTab(0)">WiFi</button>
+                <button class="tab" onclick="showTab(1)">Device</button>
+                <button class="tab" onclick="showTab(2)">AP Config</button>
+                <button class="tab" onclick="showTab(3)">Control</button>
+            </div>
+
+            <div id="tab0" class="tab-content active">
+                <h2>WiFi Configuration</h2>
+                <div class="wifi-scan-section">
+                    <button type="button" id="scanBtn" class="scan-button">
+                        <svg
+                            class="scan-icon"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"></path>
+                        </svg>
+                        <span id="scanBtnText">Scan WiFi Networks</span>
+                    </button>
+                    <div id="wifiList" class="wifi-list"></div>
+                </div>
+                <form id="wifiForm">
+                    <div class="form-group">
+                        <label for="wifi_ssid">WiFi SSID <span class="required">*</span></label>
+                        <input type="text" id="wifi_ssid" required placeholder="Select WiFi from list above or enter manually" maxlength="32" />
+                        <div class="error" id="wifi_ssidError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="wifi_password">Password</label>
+                        <div class="password-wrapper">
+                            <input
+                                type="password"
+                                id="wifi_password"
+                                placeholder="Leave empty if no password"
+                                maxlength="64"
+                            />
+                            <button type="button" class="password-toggle" onclick="togglePassword('wifi_password', this)">
+                                <svg
+                                    class="eye-icon eye-open"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg
+                                    class="eye-icon eye-closed"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path
+                                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+                                    ></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="error" id="wifi_passwordError"></div>
+                    </div>
+                    <button type="submit" id="wifiBtn">Connect WiFi</button>
+                </form>
+            </div>
+
+            <div id="tab1" class="tab-content">
+                <h2>Device Configuration</h2>
+                <form id="deviceForm">
+                    <div class="form-group">
+                        <label for="device_id">Device ID <span class="required">*</span></label>
+                        <input type="text" id="device_id" required placeholder="Enter device ID" maxlength="32" />
+                        <div class="error" id="device_idError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="send_interval">Send Interval (ms) <span class="required">*</span></label>
+                        <input type="number" id="send_interval" required placeholder="10000" min="1000" max="600000" />
+                        <div class="error" id="send_intervalError"></div>
+                    </div>
+                    <button type="submit" id="deviceBtn">Save Device Config</button>
+                </form>
+            </div>
+
+            <div id="tab2" class="tab-content">
+                <h2>AP Configuration</h2>
+                <form id="apForm">
+                    <div class="form-group">
+                        <label for="ap_ssid">AP SSID <span class="required">*</span></label>
+                        <input type="text" id="ap_ssid" required placeholder="Enter AP name" maxlength="32" />
+                        <div class="error" id="ap_ssidError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="ap_password">AP Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="ap_password" placeholder="Enter AP password" maxlength="64" />
+                            <button type="button" class="password-toggle" onclick="togglePassword('ap_password', this)">
+                                <svg
+                                    class="eye-icon eye-open"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg
+                                    class="eye-icon eye-closed"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path
+                                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+                                    ></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="error" id="ap_passwordError"></div>
+                    </div>
+                    <button type="submit" id="apBtn">Save AP Config</button>
+                </form>
+            </div>
+
+            <div id="tab3" class="tab-content">
+                <h2>Device Control</h2>
+                <form id="ledForm">
+                    <div class="form-group">
+                        <label for="led_state">GPIO45 NeoPixel LED</label>
+                        <label class="switch" aria-label="Toggle LED">
+                            <input type="checkbox" id="led_state" />
+                            <span class="slider"></span>
+                        </label>
+                        <div class="helper-text" id="led_stateText">LED is OFF</div>
+                    </div>
+                    <button type="submit" id="ledBtn">Apply</button>
+                </form>
+            </div>
+
+            <div class="status" id="status"></div>
+        </div>
+        <script src="/script.js"></script>
+    </body>
+</html>
