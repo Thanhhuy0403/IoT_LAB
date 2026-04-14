@@ -5,25 +5,22 @@
 
 // ----------- CORE IOT CONFIG -----------
 static const char* COREIOT_SERVER = "app.coreiot.io";
-static const int COREIOT_PORT = 1883;
-static const char* COREIOT_TOKEN = "w09XtPjzV9UJ4IpSXSih";  // ThingsBoard/CoreIoT access token
+static const int   COREIOT_PORT   = 1883;
+static const char* COREIOT_TOKEN  = "w09XtPjzV9UJ4IpSXSih"; // ThingsBoard/CoreIoT access token
 
 // ----------- GATEWAY MQTT CONFIG -----------
-static const char* GATEWAY_HOST = "192.168.10.114";
-static const int GATEWAY_PORT = 1883;
+static const char* GATEWAY_HOST     = "10.0.58.40";
+static const int   GATEWAY_PORT     = 1883;
 static const char* GATEWAY_USERNAME = "mqttclient";
 static const char* GATEWAY_PASSWORD = "12345678";
-static const char* GATEWAY_TOPIC = "tinyml/gateway/telemetry";
+static const char* GATEWAY_TOPIC    = "tinyml/gateway/telemetry";
 
 static const char* COREIOT_TELEMETRY_TOPIC = "v1/devices/me/telemetry";
 
-enum class UplinkMode {
-    Gateway,
-    DirectCoreIoT
-};
+enum class UplinkMode { Gateway, DirectCoreIoT };
 
-WiFiClient gatewayNetClient;
-WiFiClient coreiotNetClient;
+WiFiClient   gatewayNetClient;
+WiFiClient   coreiotNetClient;
 PubSubClient gatewayMqttClient(gatewayNetClient);
 PubSubClient coreiotMqttClient(coreiotNetClient);
 
@@ -39,7 +36,7 @@ static void rpcCallback(char* topic, byte* payload, unsigned int length) {
     message[length] = '\0';
 
     StaticJsonDocument<256> doc;
-    DeserializationError error = deserializeJson(doc, message);
+    DeserializationError    error = deserializeJson(doc, message);
     if (error) {
         Serial.print("deserializeJson() failed: ");
         Serial.println(error.c_str());
@@ -117,10 +114,10 @@ static void updateUplinkMode() {
 
 static bool publishTelemetry() {
     StaticJsonDocument<256> doc;
-    doc["device_id"] = glob_device_id;
+    doc["device_id"]   = glob_device_id;
     doc["temperature"] = glob_temperature;
-    doc["humidity"] = glob_humidity;
-    doc["ts"] = millis();
+    doc["humidity"]    = glob_humidity;
+    doc["ts"]          = millis();
 
     String payload;
     serializeJson(doc, payload);
